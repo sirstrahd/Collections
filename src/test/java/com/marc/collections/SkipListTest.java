@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
@@ -54,7 +56,7 @@ public class SkipListTest {
 
 	@Test
 	public void add_realTest3_realRandom() {
-		SkipList<Integer> mySkipList = new SkipList<>(4, new Random());
+		SkipList<Integer> mySkipList = new SkipList<>(4);
 		mySkipList.add(new Integer(5));
 		mySkipList.add(new Integer(6));
 		mySkipList.add(new Integer(8));
@@ -64,7 +66,7 @@ public class SkipListTest {
 
 	@Test
 	public void add_duplicates() {
-		SkipList<Integer> mySkipList = new SkipList<>(4, new Random());
+		SkipList<Integer> mySkipList = new SkipList<>(4);
 		mySkipList.add(new Integer(5));
 		mySkipList.add(new Integer(6));
 		mySkipList.add(new Integer(8));
@@ -77,7 +79,7 @@ public class SkipListTest {
 
 	@Test
 	public void get_Present() {
-		SkipList<Integer> mySkipList = new SkipList<>(4, new Random());
+		SkipList<Integer> mySkipList = new SkipList<>(4);
 		mySkipList.add(new Integer(5));
 		mySkipList.add(new Integer(6));
 		mySkipList.add(new Integer(8));
@@ -87,7 +89,7 @@ public class SkipListTest {
 
 	@Test
 	public void get_NotPresent() {
-		SkipList<Integer> mySkipList = new SkipList<>(4, new Random());
+		SkipList<Integer> mySkipList = new SkipList<>(4);
 		mySkipList.add(new Integer(5));
 		mySkipList.add(new Integer(6));
 		mySkipList.add(new Integer(10));
@@ -97,20 +99,20 @@ public class SkipListTest {
 
 	@Test
 	public void isEmpty_true() {
-		SkipList<Integer> mySkipList = new SkipList<>(4, new Random());
+		SkipList<Integer> mySkipList = new SkipList<>(4);
 		assertTrue(mySkipList.isEmpty());
 	}
 
 	@Test
 	public void isEmpty_false() {
-		SkipList<Integer> mySkipList = new SkipList<>(4, new Random());
+		SkipList<Integer> mySkipList = new SkipList<>(4);
 		mySkipList.add(new Integer(5));
 		assertFalse(mySkipList.isEmpty());
 	}
 
 	@Test
 	public void clear_emptyAfterwards() {
-		SkipList<Integer> mySkipList = new SkipList<>(4, new Random());
+		SkipList<Integer> mySkipList = new SkipList<>(4);
 		mySkipList.add(new Integer(5));
 		mySkipList.clear();
 		assertTrue(mySkipList.isEmpty());
@@ -118,7 +120,7 @@ public class SkipListTest {
 
 	@Test
 	public void remove_emptyAfterwards() {
-		SkipList<Integer> mySkipList = new SkipList<>(4, new Random());
+		SkipList<Integer> mySkipList = new SkipList<>(4);
 		mySkipList.add(new Integer(5));
 		mySkipList.remove(new Integer(5));
 		assertTrue(mySkipList.isEmpty());
@@ -126,7 +128,7 @@ public class SkipListTest {
 
 	@Test
 	public void remove_normalCase() {
-		SkipList<Integer> mySkipList = new SkipList<>(4, new Random());
+		SkipList<Integer> mySkipList = new SkipList<>(4);
 		mySkipList.add(new Integer(5));
 		mySkipList.add(new Integer(6));
 		mySkipList.add(new Integer(15));
@@ -136,4 +138,45 @@ public class SkipListTest {
 		assertEquals(new Integer(17), mySkipList.getByPosition(2));
 	}
 
+	@Test
+	public void removeAll_removeAllElements() {
+		SkipList<Integer> mySkipList = new SkipList<>();
+		mySkipList.add(new Integer(5));
+		mySkipList.add(new Integer(6));
+		mySkipList.add(new Integer(15));
+		mySkipList.add(new Integer(17));
+		List<Integer> elementsToRemove = new ArrayList<>();
+		elementsToRemove.add(new Integer(5));
+		elementsToRemove.add(new Integer(6));
+		elementsToRemove.add(new Integer(15));
+		elementsToRemove.add(new Integer(17));
+		mySkipList.removeAll(elementsToRemove);
+		assertTrue(mySkipList.isEmpty());
+	}
+	
+	@Test
+	public void removeAll_removeSome() {
+		SkipList<Integer> mySkipList = new SkipList<>();
+		mySkipList.add(new Integer(5));
+		mySkipList.add(new Integer(6));
+		mySkipList.add(new Integer(15));
+		mySkipList.add(new Integer(17));
+		List<Integer> elementsToRemove = new ArrayList<>();
+		elementsToRemove.add(new Integer(5));
+		elementsToRemove.add(new Integer(6));
+		mySkipList.removeAll(elementsToRemove);
+		assertFalse(mySkipList.isEmpty());
+		assertEquals(new Integer(15), mySkipList.getByPosition(0));
+	}
+	
+	@Test
+	public void addAll_addSome() {
+		SkipList<Integer> mySkipList = new SkipList<>();
+		List<Integer> elementsToAdd = new ArrayList<>();
+		elementsToAdd.add(new Integer(6));
+		elementsToAdd.add(new Integer(5));
+		mySkipList.addAll(elementsToAdd);
+		assertEquals(2, mySkipList.size());
+		assertEquals(new Integer(5), mySkipList.getByPosition(0));
+	}
 }

@@ -1,16 +1,29 @@
 package com.marc.collections;
 
-import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 
+/**
+ * Rough SkipList implementation, done for learning purposes.
+ * @author sirstrahd
+ *
+ * @param <T> the Generic Type to use
+ */
 public class SkipList<T extends Comparable<? super T>> implements Collection<T> {
 
-	private final int listsAmount;
+	private static final int DEFAULT_AMOUNT_OF_ROWS = 4;
+	
+	private final int rowsAmount;
 
-	public Random random = new SecureRandom();
+	public final Random random;
 
+	/**
+	 * Auxiliary structure used for containing the elements
+	 * @author sirstrahd
+	 *
+	 * @param <T>
+	 */
 	private static class SkipListElement<T> {
 		private T value;
 		private SkipListElement down;
@@ -28,21 +41,43 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 	}
 
 	private SkipListElement<T>[] listHeads;
+	
+	/**
+	 * Instantiates a SkipList with the default amount of rows and a generic random number generator.
+	 */
+	public SkipList() {
+		this(DEFAULT_AMOUNT_OF_ROWS);
+	}
+	
+	/**
+	 * Instantiates a SkipList with the given amount of rows and a generic random number generator.
+	 * @param amount the amount of rows to use. More rows mean more used space but better times.
+	 */
+	public SkipList(final int amount) {
+		this(amount, new Random());
+	}
 
-	public SkipList(final int amount, final Random random) {
-		this.listsAmount = amount;
+	/**
+	 * Instantiates a SkipList with the given amount of rows and the given Random Number generator
+	 * @param rowsAmount the amount of rows to use. More rows mean more used space but better times.
+	 * @param random a random number generator
+	 */
+	public SkipList(final int rowsAmount, final Random random) {
+		this.rowsAmount = rowsAmount;
 		this.random = random;
-		listHeads = new SkipListElement[listsAmount];
+		listHeads = new SkipListElement[rowsAmount];
 	}
 
 	@Override
 	public boolean add(final T insertionValue) {
 		SkipListElement<?>[] smallerElements = getSmallerElementsArray(insertionValue, false);
 		int randomValue = random.nextInt(100);
-		final int listsToFill = randomValue / (100 / listsAmount) + 1;
+		final int listsToFill = randomValue / (100 / rowsAmount) + 1;
 		for (int i = 0; i < listsToFill; i++) {
 			if (smallerElements[i] == null) {
+				SkipListElement<T> oldHead = listHeads[i];
 				listHeads[i] = new SkipListElement<T>(insertionValue);
+				listHeads[i].right = oldHead;
 				if (i > 0) {
 					listHeads[i].down = listHeads[i - 1];
 				}
@@ -81,11 +116,11 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 	}
 
 	private SkipListElement<?>[] getSmallerElementsArray(final T insertionValue, final boolean strictlySmaller) {
-		int currentList = listsAmount - 1;
-		SkipListElement<?>[] smallerElements = new SkipListElement[listsAmount];
+		int currentList = rowsAmount - 1;
+		SkipListElement<?>[] smallerElements = new SkipListElement[rowsAmount];
 		while (currentList >= 0) {
 			SkipListElement<T> startingPointForThisList;
-			if ((currentList < listsAmount - 1) && (currentList > 0) && smallerElements[currentList + 1] != null) {
+			if ((currentList < rowsAmount - 1) && (currentList > 0) && smallerElements[currentList + 1] != null) {
 				startingPointForThisList = (SkipListElement<T>) smallerElements[currentList + 1].down;
 			} else {
 				startingPointForThisList = (SkipListElement<T>) listHeads[currentList];
@@ -141,24 +176,6 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public <T> T[] toArray(T[] a) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public boolean containsAll(Collection<?> c) {
 		for (Object elem : c) {
 			if (!contains(elem)) {
@@ -172,26 +189,23 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 	public boolean addAll(Collection<? extends T> c) {
 		boolean modified = false;
 		for (Object elem : c) {
-			modified = modified || add((T) elem);
+			modified = add((T) elem) || modified;
 		}
 		return modified;
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		boolean modified = false;
+		for (Object elem : c) {
+			modified = remove((T) elem) || modified;
+		}
+		return modified;
 	}
 
 	@Override
 	public void clear() {
-		listHeads = new SkipListElement[listsAmount];
+		listHeads = new SkipListElement[rowsAmount];
 	}
 
 	private SkipListElement<T> getSmallerElementFromList(SkipListElement<T> skipListElement, T inputValue,
@@ -209,7 +223,7 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 	}
 
 	private SkipListElement<?> findElement(T value) {
-		int currentList = listsAmount - 1;
+		int currentList = rowsAmount - 1;
 		SkipListElement<?> foundElement = null;
 		SkipListElement<T> startingPointForThisList = (SkipListElement<T>) listHeads[currentList];
 		while (foundElement == null && currentList-- >= 0) {
@@ -244,6 +258,30 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 		}
 		sb.append("]");
 		return sb.toString();
+	}
+	
+	@Override
+	public boolean retainAll(Collection<?> c) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Iterator<T> iterator() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object[] toArray() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public <T> T[] toArray(T[] a) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
 	}
 
 }
