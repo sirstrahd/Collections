@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -133,7 +134,7 @@ public class SkipListTest {
 		mySkipList.add(new Integer(6));
 		mySkipList.add(new Integer(15));
 		mySkipList.add(new Integer(17));
-		mySkipList.remove(new Integer(5));
+		assertTrue(mySkipList.remove(new Integer(5)));
 		assertEquals(3, mySkipList.size());
 		assertEquals(new Integer(17), mySkipList.getByPosition(2));
 	}
@@ -178,5 +179,37 @@ public class SkipListTest {
 		mySkipList.addAll(elementsToAdd);
 		assertEquals(2, mySkipList.size());
 		assertEquals(new Integer(5), mySkipList.getByPosition(0));
+	}
+	
+	@Test
+	public void iterator_remove_all() {
+		SkipList<Integer> mySkipList = new SkipList<>();
+		mySkipList.add(new Integer(5));
+		mySkipList.add(new Integer(6));
+		mySkipList.add(new Integer(15));
+		mySkipList.add(new Integer(17));
+		Iterator<Integer> iterator = mySkipList.iterator();
+		while(iterator.hasNext()) {
+			iterator.next();
+			iterator.remove();
+		}
+		assertTrue(mySkipList.isEmpty());
+	}
+	
+	@Test
+	public void iterator_visits_all() {
+		SkipList<Integer> mySkipList = new SkipList<>();
+		mySkipList.add(new Integer(5));
+		mySkipList.add(new Integer(6));
+		mySkipList.add(new Integer(15));
+		mySkipList.add(new Integer(17));
+		Iterator<Integer> iterator = mySkipList.iterator();
+		int times = 0;
+		while(iterator.hasNext()) {
+			times++;
+			iterator.next();
+			iterator.remove();
+		}
+		assertEquals(4, times);
 	}
 }
