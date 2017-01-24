@@ -154,7 +154,7 @@ public class SkipListTest {
 		mySkipList.removeAll(elementsToRemove);
 		assertTrue(mySkipList.isEmpty());
 	}
-	
+
 	@Test
 	public void removeAll_removeSome() {
 		SkipList<Integer> mySkipList = new SkipList<>();
@@ -169,7 +169,7 @@ public class SkipListTest {
 		assertFalse(mySkipList.isEmpty());
 		assertEquals(new Integer(15), mySkipList.getByPosition(0));
 	}
-	
+
 	@Test
 	public void addAll_addSome() {
 		SkipList<Integer> mySkipList = new SkipList<>();
@@ -180,7 +180,7 @@ public class SkipListTest {
 		assertEquals(2, mySkipList.size());
 		assertEquals(new Integer(5), mySkipList.getByPosition(0));
 	}
-	
+
 	@Test
 	public void iterator_remove_all() {
 		SkipList<Integer> mySkipList = new SkipList<>();
@@ -189,13 +189,13 @@ public class SkipListTest {
 		mySkipList.add(new Integer(15));
 		mySkipList.add(new Integer(17));
 		Iterator<Integer> iterator = mySkipList.iterator();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			iterator.next();
 			iterator.remove();
 		}
 		assertTrue(mySkipList.isEmpty());
 	}
-	
+
 	@Test
 	public void iterator_visits_all() {
 		SkipList<Integer> mySkipList = new SkipList<>();
@@ -205,11 +205,20 @@ public class SkipListTest {
 		mySkipList.add(new Integer(17));
 		Iterator<Integer> iterator = mySkipList.iterator();
 		int times = 0;
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			times++;
 			iterator.next();
 			iterator.remove();
 		}
 		assertEquals(4, times);
+	}
+
+	@Test
+	public void toArray_works() {
+		SkipList<Integer> mySkipList = new SkipList<>();
+		mySkipList.add(new Integer(5));
+		Object[] array = mySkipList.toArray();
+		assertEquals(1, array.length);
+		assertEquals(new Integer(5), (Integer) array[0]);
 	}
 }

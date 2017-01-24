@@ -6,41 +6,53 @@ import java.util.Random;
 
 /**
  * Rough SkipList implementation, done for learning purposes.
+ * 
  * @author sirstrahd
  *
- * @param <T> the Generic Type to use
+ * @param <T>
+ *            the Generic Type to use
  */
 public class SkipList<T extends Comparable<? super T>> implements Collection<T> {
 
 	private static final int DEFAULT_AMOUNT_OF_ROWS = 4;
-	
+
 	private final int rowsAmount;
 
 	public final Random random;
-	
+
 	private int size;
 
 	private SkipListElement<T>[] listHeads;
-	
+
 	/**
-	 * Instantiates a SkipList with the default amount of rows and a generic random number generator.
+	 * Instantiates a SkipList with the default amount of rows and a generic
+	 * random number generator.
 	 */
 	public SkipList() {
 		this(DEFAULT_AMOUNT_OF_ROWS);
 	}
-	
+
 	/**
-	 * Instantiates a SkipList with the given amount of rows and a generic random number generator.
-	 * @param amount the amount of rows to use. More rows mean more used space but better times.
+	 * Instantiates a SkipList with the given amount of rows and a generic
+	 * random number generator.
+	 * 
+	 * @param amount
+	 *            the amount of rows to use. More rows mean more used space but
+	 *            better times.
 	 */
 	public SkipList(final int amount) {
 		this(amount, new Random());
 	}
 
 	/**
-	 * Instantiates a SkipList with the given amount of rows and the given Random Number generator
-	 * @param rowsAmount the amount of rows to use. More rows mean more used space but better times.
-	 * @param random a random number generator
+	 * Instantiates a SkipList with the given amount of rows and the given
+	 * Random Number generator
+	 * 
+	 * @param rowsAmount
+	 *            the amount of rows to use. More rows mean more used space but
+	 *            better times.
+	 * @param random
+	 *            a random number generator
 	 */
 	public SkipList(final int rowsAmount, final Random random) {
 		this.rowsAmount = rowsAmount;
@@ -151,12 +163,12 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 	public void clear() {
 		listHeads = new SkipListElement[rowsAmount];
 	}
-	
+
 	@Override
 	public Iterator<T> iterator() {
 		return new SkipListIterator();
 	}
-	
+
 	@Override
 	public boolean retainAll(Collection<?> c) {
 		// TODO Auto-generated method stub
@@ -165,8 +177,14 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 
 	@Override
 	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		Object[] array = new Object[size()];
+		SkipListElement<T> currentElement = listHeads[0];
+		int i = 0;
+		while (currentElement != null) {
+			array[i++] = currentElement.value;
+			currentElement = currentElement.right;
+		}
+		return array;
 	}
 
 	@Override
@@ -174,8 +192,7 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException();
 	}
-	
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
@@ -192,9 +209,9 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 		sb.append("]");
 		return sb.toString();
 	}
-	
-	//******************* Private methods
-	
+
+	// ******************* Private methods
+
 	private SkipListElement<?> findElement(T value) {
 		int currentList = rowsAmount - 1;
 		SkipListElement<?> foundElement = null;
@@ -215,7 +232,7 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 		}
 		return foundElement;
 	}
-	
+
 	private SkipListElement<?>[] getSmallerElementsArray(final T insertionValue, final boolean strictlySmaller) {
 		int currentList = rowsAmount - 1;
 		SkipListElement<?>[] smallerElements = new SkipListElement[rowsAmount];
@@ -235,7 +252,7 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 		}
 		return smallerElements;
 	}
-	
+
 	private SkipListElement<T> getSmallerElementFromList(SkipListElement<T> skipListElement, T inputValue,
 			final boolean strictlySmaller) {
 		SkipListElement<T> previousSkipListCandidate = null;
@@ -249,9 +266,10 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 		}
 		return previousSkipListCandidate;
 	}
-	
+
 	/**
 	 * Auxiliary structure used for containing the elements
+	 * 
 	 * @author sirstrahd
 	 *
 	 * @param <T>
@@ -270,18 +288,21 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 			return value.toString();
 		}
 	}
-	
+
 	/**
 	 * Iterator for SkipList elements.
+	 * 
 	 * @author marc
 	 *
 	 */
 	class SkipListIterator implements Iterator<T> {
 		private SkipListElement<T> current;
+
 		SkipListIterator() {
-			 current = new SkipListElement<T>(null);
-			 current.right= listHeads[0];
+			current = new SkipListElement<T>(null);
+			current.right = listHeads[0];
 		}
+
 		@Override
 		public boolean hasNext() {
 			return current.right != null;
@@ -298,7 +319,7 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 			SkipList.this.remove(current.value);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param position
