@@ -1,5 +1,6 @@
 package com.marc.collections;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
@@ -178,6 +179,10 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 	@Override
 	public Object[] toArray() {
 		Object[] array = new Object[size()];
+		return fillArrayWithElements(array);
+	}
+
+	private Object[] fillArrayWithElements(Object[] array) {
 		SkipListElement<T> currentElement = listHeads[0];
 		int i = 0;
 		while (currentElement != null) {
@@ -189,8 +194,16 @@ public class SkipList<T extends Comparable<? super T>> implements Collection<T> 
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		T[] output;
+		if (a.length >= size()) {
+			output = a;
+			if (a.length > size()) {
+				a[size()] = null;
+			}
+		} else {
+			output = (T[]) Array.newInstance(a.getClass().getComponentType(), size());
+		}
+		return (T[])fillArrayWithElements(output);
 	}
 
 	@Override

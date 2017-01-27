@@ -2,6 +2,7 @@ package com.marc.collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -208,7 +209,6 @@ public class SkipListTest {
 		while (iterator.hasNext()) {
 			times++;
 			iterator.next();
-			iterator.remove();
 		}
 		assertEquals(4, times);
 	}
@@ -220,5 +220,29 @@ public class SkipListTest {
 		Object[] array = mySkipList.toArray();
 		assertEquals(1, array.length);
 		assertEquals(new Integer(5), (Integer) array[0]);
+	}
+	
+	@Test
+	public void toArray_populatesInput() {
+		SkipList<Integer> mySkipList = new SkipList<>();
+		mySkipList.add(new Integer(5));
+		mySkipList.add(new Integer(6));
+		Integer[] input = new Integer[5];
+		mySkipList.toArray(input);
+		assertEquals(new Integer(5), (Integer) input[0]);
+		assertEquals(new Integer(6), (Integer) input[1]);
+		assertNull((Integer) input[2]);
+	}
+	
+	@Test
+	public void toArray_usesOtherIfDoesntFit() {
+		SkipList<Integer> mySkipList = new SkipList<>();
+		mySkipList.add(new Integer(5));
+		mySkipList.add(new Integer(6));
+		Integer[] input = new Integer[0];
+		Integer[] array = mySkipList.toArray(input);
+		assertEquals(2, array.length);
+		assertEquals(new Integer(5), (Integer) array[0]);
+		assertEquals(new Integer(6), (Integer) array[1]);
 	}
 }
